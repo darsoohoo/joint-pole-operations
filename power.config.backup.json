@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "appId": "8998e65e-8265-439f-8922-11faffcc6d31",
+  "appDisplayName": "Joint Pole Operations",
+  "region": "prod",
+  "environmentId": "543d442f-0b4a-e67b-89eb-1e32c0622907",
+  "description": "",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "localAppUrl": "http://localhost:3000",
+  "logoPath": "Default",
+  "connectionReferences": {},
+  "databaseReferences": {}
+}
