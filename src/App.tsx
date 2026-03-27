@@ -1,14 +1,32 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import MyTable from './Components/Table'
 import { Office365UsersService } from './generated/services/Office365UsersService';
 
-const profile = (await Office365UsersService.MyProfile_V2("id,displayName,jobTitle,id,userPrincipalName")).data;
-
 function App() {
   const [count, setCount] = useState(0);
+  const [profileName, setProfileName] = useState('there');
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const result = await Office365UsersService.MyProfile_V2('id,displayName,jobTitle,userPrincipalName');
+
+        if (result.success && result.data?.displayName) {
+          setProfileName(result.data.displayName);
+          return;
+        }
+
+        console.error('Failed to load Office 365 profile.', result.error);
+      } catch (error) {
+        console.error('Unexpected error loading Office 365 profile:', error);
+      }
+    };
+
+    loadProfile();
+  }, []);
 
 
   return (
@@ -27,7 +45,7 @@ function App() {
           count is {count}
         </button>
         <p>
-          Whatsup { profile.displayName }!
+          Whatsup {profileName}!
         </p>
       </div>
       <MyTable />

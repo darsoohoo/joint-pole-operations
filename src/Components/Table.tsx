@@ -8,19 +8,19 @@ import {
 } from '@fluentui/react-components'
 import { useState, useEffect } from 'react'
 import type { CSSProperties } from 'react'
-import { JointPoleIntentsService } from '../generated/services/JointPoleIntentsService'; 
-import type { JointPoleIntentsBase } from '../generated/models/JointPoleIntentsModel'; 
+import { JointPoleIntentsService } from '../generated/services/JointPoleIntentsService';
+import type { JointPoleIntentsBase } from '../generated/models/JointPoleIntentsModel';
 //import intents from '../data/intents.json'
 
 function MyTable() {
 
 
-// const intents: { IntentNumber: string; Description: string; IntentLifecycleStage: string }[] = [
-//     { "IntentNumber": "PG10000", "Description": "Install solar panels on the roof of the building", "IntentLifecycleStage": "Pre-Construction"},
-//     { "IntentNumber": "PG100002", "Description": "Upgrade HVAC system to improve energy efficiency", "IntentLifecycleStage": "Post-Construction" },
-//     { "IntentNumber": "PG100003", "Description": "Implement rainwater harvesting system", "IntentLifecycleStage": "Pre-Construction" },
-//     { "IntentNumber": "PG100004", "Description": "Replace windows with double-glazed units", "IntentLifecycleStage": "Post-Construction" }
-// ];
+    // const intents: { IntentNumber: string; Description: string; IntentLifecycleStage: string }[] = [
+    //     { "IntentNumber": "PG10000", "Description": "Install solar panels on the roof of the building", "IntentLifecycleStage": "Pre-Construction"},
+    //     { "IntentNumber": "PG100002", "Description": "Upgrade HVAC system to improve energy efficiency", "IntentLifecycleStage": "Post-Construction" },
+    //     { "IntentNumber": "PG100003", "Description": "Implement rainwater harvesting system", "IntentLifecycleStage": "Pre-Construction" },
+    //     { "IntentNumber": "PG100004", "Description": "Replace windows with double-glazed units", "IntentLifecycleStage": "Post-Construction" }
+    // ];
 
     const recordsPerPage = 100;
     const [currentPage, setCurrentPage] = useState(1);
@@ -36,14 +36,24 @@ function MyTable() {
     const loadRecords = async () => {
         try {
             const result = await JointPoleIntentsService.getAll();
-            if (result.data) {
+            console.log('JointPoleIntentsService.getAll result:', {
+                success: result.success,
+                count: Array.isArray(result.data) ? result.data.length : undefined,
+                error: result.error,
+                skipToken: result.skipToken,
+            });
+
+            if (result.success && Array.isArray(result.data)) {
                 console.log('Fetched Intents:', result.data);
-                setIntents(result.data); // result.data is T[] 
-            } else {
-                console.log('No intents found or error occurred');
+                setIntents(result.data);
+                return;
             }
+
+            console.error('Failed to fetch SharePoint list records.', result.error);
+            setIntents([]);
         } catch (err) {
             console.error('Error fetching intents:', err);
+            setIntents([]);
         }
     };
 

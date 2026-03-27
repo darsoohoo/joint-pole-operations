@@ -22,12 +22,12 @@
       "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
       "displayName": "SharePoint",
       "dataSources": [
-        "jointpoleintents"
+        "joint pole intents"
       ],
       "dataSets": {
         "https%253A%252F%252Fspdevdarren.sharepoint.com%252Fsites%252FJointPoleOperations%252F": {
           "dataSources": {
-            "jointpoleintents": {
+            "joint pole intents": {
               "tableName": "6f47796b-622a-4f38-8092-3fda158c2aca"
             }
           }
