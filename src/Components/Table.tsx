@@ -6,28 +6,51 @@ import {
     TableHeaderCell,
     TableRow
 } from '@fluentui/react-components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { CSSProperties } from 'react'
+import { JointPoleIntentsService } from '../generated/services/JointPoleIntentsService'; 
+import type { JointPoleIntentsBase } from '../generated/models/JointPoleIntentsModel'; 
 //import intents from '../data/intents.json'
 
 function MyTable() {
 
-const intents: { intentNumber: string; description: string; intentLifecycleStage: string }[] = [
-    { "intentNumber": "PG10000", description: "Install solar panels on the roof of the building", intentLifecycleStage: "Pre-Construction"},
-    { "intentNumber": "PG100002", description: "Upgrade HVAC system to improve energy efficiency", intentLifecycleStage: "Post-Construction" },
-    { "intentNumber": "PG100003", description: "Implement rainwater harvesting system", intentLifecycleStage: "Pre-Construction" },
-    { "intentNumber": "PG100004", description: "Replace windows with double-glazed units", intentLifecycleStage: "Post-Construction" }
-];
+
+// const intents: { IntentNumber: string; Description: string; IntentLifecycleStage: string }[] = [
+//     { "IntentNumber": "PG10000", "Description": "Install solar panels on the roof of the building", "IntentLifecycleStage": "Pre-Construction"},
+//     { "IntentNumber": "PG100002", "Description": "Upgrade HVAC system to improve energy efficiency", "IntentLifecycleStage": "Post-Construction" },
+//     { "IntentNumber": "PG100003", "Description": "Implement rainwater harvesting system", "IntentLifecycleStage": "Pre-Construction" },
+//     { "IntentNumber": "PG100004", "Description": "Replace windows with double-glazed units", "IntentLifecycleStage": "Post-Construction" }
+// ];
 
     const recordsPerPage = 100;
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedLifecycleStage, setSelectedLifecycleStage] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
+    const [intents, setIntents] = useState<JointPoleIntentsBase[]>([]);
+
+    useEffect(() => {
+        console.log("Loading records...");
+        loadRecords();
+    }, []);
+
+    const loadRecords = async () => {
+        try {
+            const result = await JointPoleIntentsService.getAll();
+            if (result.data) {
+                console.log('Fetched Intents:', result.data);
+                setIntents(result.data); // result.data is T[] 
+            } else {
+                console.log('No intents found or error occurred');
+            }
+        } catch (err) {
+            console.error('Error fetching intents:', err);
+        }
+    };
 
     const columnWidths: Record<string, CSSProperties> = {
-        intentNumber: { width: '180px', minWidth: '180px' },
-        description: { width: '320px', minWidth: '320px' },
-        lifecycleStage: { width: '220px', minWidth: '220px' }
+        IntentNumber: { width: '180px', minWidth: '180px' },
+        Description: { width: '320px', minWidth: '320px' },
+        IntentLifecycleStage: { width: '220px', minWidth: '220px' }
     };
 
     const rowBorderStyle: CSSProperties = {
@@ -42,8 +65,10 @@ const intents: { intentNumber: string; description: string; intentLifecycleStage
         padding: '10px 12px'
     };
 
-    const getLifecycleStageStyle = (stage: string): CSSProperties => {
-        const normalizedStage = stage.trim().toLowerCase();
+    const normalize = (value?: string) => (value ?? '').trim().toLowerCase();
+
+    const getLifecycleStageStyle = (stage?: string): CSSProperties => {
+        const normalizedStage = normalize(stage);
 
         if (normalizedStage === 'post-construction' || normalizedStage === 'post-contruction') {
             return { backgroundColor: '#dcfce7', color: '#166534' };
@@ -57,12 +82,18 @@ const intents: { intentNumber: string; description: string; intentLifecycleStage
     };
 
     const filteredIntents = intents.filter((intent) => {
-        const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-        const matchesLifecycleStage = selectedLifecycleStage === 'all'
-            || intent.intentLifecycleStage.trim().toLowerCase() === selectedLifecycleStage;
-        const matchesSearch = normalizedSearchTerm === ''
-            || intent.intentNumber.toLowerCase().includes(normalizedSearchTerm)
-            || intent.description.toLowerCase().includes(normalizedSearchTerm);
+        const normalizedSearchTerm = normalize(searchTerm);
+        const intentStage = normalize(intent.IntentLifecycleStage);
+        const intentNumber = normalize(intent.IntentNumber);
+        const intentDescription = normalize(intent.Description);
+
+        const matchesLifecycleStage =
+            selectedLifecycleStage === 'all' || intentStage === selectedLifecycleStage;
+
+        const matchesSearch =
+            normalizedSearchTerm === '' ||
+            intentNumber.includes(normalizedSearchTerm) ||
+            intentDescription.includes(normalizedSearchTerm);
 
         return matchesLifecycleStage && matchesSearch;
     });
@@ -150,17 +181,17 @@ const intents: { intentNumber: string; description: string; intentLifecycleStage
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHeaderCell style={{ ...columnWidths.intentNumber, ...leftAlignStyle, ...cellPaddingStyle }}>Intent Number</TableHeaderCell>
-                        <TableHeaderCell style={{ ...columnWidths.description, ...leftAlignStyle, ...cellPaddingStyle }}>Description</TableHeaderCell>
-                        <TableHeaderCell style={{ ...columnWidths.lifecycleStage, ...leftAlignStyle, ...cellPaddingStyle }}>Lifecycle Stage</TableHeaderCell>
+                        <TableHeaderCell style={{ ...columnWidths.IntentNumber, ...leftAlignStyle, ...cellPaddingStyle }}>Intent Number</TableHeaderCell>
+                        <TableHeaderCell style={{ ...columnWidths.Description, ...leftAlignStyle, ...cellPaddingStyle }}>Description</TableHeaderCell>
+                        <TableHeaderCell style={{ ...columnWidths.IntentLifecycleStage, ...leftAlignStyle, ...cellPaddingStyle }}>Lifecycle Stage</TableHeaderCell>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {paginatedIntents.map((intent) => (
-                        <TableRow key={intent.intentNumber}>
-                            <TableCell style={{ ...columnWidths.intentNumber, ...rowBorderStyle, ...leftAlignStyle, ...cellPaddingStyle }}>{intent.intentNumber}</TableCell>
-                            <TableCell style={{ ...columnWidths.description, ...rowBorderStyle, ...leftAlignStyle, ...cellPaddingStyle }}>{intent.description}</TableCell>
-                            <TableCell style={{ ...columnWidths.lifecycleStage, ...rowBorderStyle, ...leftAlignStyle, ...cellPaddingStyle, ...getLifecycleStageStyle(intent.intentLifecycleStage) }}>{intent.intentLifecycleStage}</TableCell>
+                        <TableRow key={intent.IntentNumber}>
+                            <TableCell style={{ ...columnWidths.IntentNumber, ...rowBorderStyle, ...leftAlignStyle, ...cellPaddingStyle }}>{intent.IntentNumber}</TableCell>
+                            <TableCell style={{ ...columnWidths.Description, ...rowBorderStyle, ...leftAlignStyle, ...cellPaddingStyle }}>{intent.Description}</TableCell>
+                            <TableCell style={{ ...columnWidths.IntentLifecycleStage, ...rowBorderStyle, ...leftAlignStyle, ...cellPaddingStyle, ...getLifecycleStageStyle(intent.IntentLifecycleStage) }}>{intent.IntentLifecycleStage}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
