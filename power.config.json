@@ -17,6 +17,22 @@
         "office365users"
       ],
       "dataSets": {}
+    },
+    "d7386622-ed59-4792-8e17-416c9d39bf9b": {
+      "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+      "displayName": "SharePoint",
+      "dataSources": [
+        "jointpoleintents"
+      ],
+      "dataSets": {
+        "https%253A%252F%252Fspdevdarren.sharepoint.com%252Fsites%252FJointPoleOperations%252F": {
+          "dataSources": {
+            "jointpoleintents": {
+              "tableName": "6f47796b-622a-4f38-8092-3fda158c2aca"
+            }
+          }
+        }
+      }
     }
   },
   "databaseReferences": {}

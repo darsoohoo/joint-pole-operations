@@ -4,7 +4,10 @@
  */
 
 // Models
+export * as CommonModels from './models/CommonModels';
+export * as JointPoleIntentsModel from './models/JointPoleIntentsModel';
 export * as Office365UsersModel from './models/Office365UsersModel';
 
 // Services
+export * from './services/JointPoleIntentsService';
 export * from './services/Office365UsersService';

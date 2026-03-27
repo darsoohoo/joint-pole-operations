@@ -2,6 +2,7 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import MyTable from './Components/Table'
 import { Office365UsersService } from './generated/services/Office365UsersService';
 
 const profile = (await Office365UsersService.MyProfile_V2("id,displayName,jobTitle,id,userPrincipalName")).data;
@@ -29,9 +30,7 @@ function App() {
           Whatsup { profile.displayName }!
         </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <MyTable />
     </>
   )
 }
